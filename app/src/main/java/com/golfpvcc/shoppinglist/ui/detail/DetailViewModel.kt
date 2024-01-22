@@ -1,5 +1,6 @@
 package com.golfpvcc.shoppinglist.ui.detail
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -100,6 +101,7 @@ constructor(
     }
 
     fun addShoppingItem() {
+        Log.d("VIN:", "addShoppingItem")
         viewModelScope.launch {
             repository.insertItem(
                 Item(
@@ -135,6 +137,7 @@ constructor(
         }
     }
     fun addStore(){
+        Log.d("VIN:", "Add store")
         viewModelScope.launch {
             repository.insertStore(
                 Store(

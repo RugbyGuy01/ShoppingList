@@ -1,5 +1,6 @@
 package com.golfpvcc.shoppinglist.ui.home
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -85,7 +86,7 @@ fun HomeScreen(
                     isChecked = it.item.isChecked,
                     onCheckedChange = homeViewModel::onItemCheckedChange
                 ) {
-                    onNavigate.invoke(it.item.id)
+                    onNavigate(it.item.id)
                 }
             }
         }
@@ -102,7 +103,10 @@ fun ShoppingItems(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick }
+            .clickable {
+                Log.d("VIN:", "ShoppingItems onItemClick")
+                onItemClick()
+            }
             .padding(8.dp)
     ) {
         Row(
@@ -147,7 +151,7 @@ fun CategoryItem(
     @DrawableRes iconRes: Int,
     title: String,
     selected: Boolean,
-    onItemClciked: () -> Unit
+    onItemClicked: () -> Unit
 ) {
 
     Card(
@@ -157,7 +161,10 @@ fun CategoryItem(
                 selected = selected,
                 interactionSource = MutableInteractionSource(),
                 indication = rememberRipple(),
-                onClick = { onItemClciked.invoke() }
+                onClick = {
+                    Log.d("VIN", "Card to onItemClicked")
+                    onItemClicked()
+                }
             ),
         border = BorderStroke(
             1.dp,
