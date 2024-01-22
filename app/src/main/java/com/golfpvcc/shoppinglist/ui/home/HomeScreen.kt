@@ -24,17 +24,22 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import com.golfpvcc.shoppinglist.ui.theme.shape
 
 import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +55,7 @@ import java.util.Date
 import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigate: (Int) -> Unit
@@ -81,13 +87,33 @@ fun HomeScreen(
                 }
             }
             items(homeState.items) {
-                ShoppingItems(
-                    item = it,
-                    isChecked = it.item.isChecked,
-                    onCheckedChange = homeViewModel::onItemCheckedChange
-                ) {
-                    onNavigate(it.item.id)
-                }
+                val dismissState = rememberDismissState(
+                    confirmStateChange = { value ->
+                        if (value == DissmissValue.DissmissedToEnd) {
+                            homeViewModel.deleteItem(it.item)
+                        }
+                        true
+                    }
+                )
+                SwipeToDismiss(
+                    state = dismissState,
+                    background = {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(), color = Color.Red
+                        ) {
+
+                        }
+                    },
+                    dismissContent = {
+                        ShoppingItems(
+                            item = it,
+                            isChecked = it.item.isChecked,
+                            onCheckedChange = homeViewModel::onItemCheckedChange
+                        ) {
+                            onNavigate(it.item.id)
+                        }
+                    }
+                )
             }
         }
     }
