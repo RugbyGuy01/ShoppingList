@@ -199,18 +199,16 @@ fun DetailEntry(
             onClick = {
                 when (state.isUpdatingItem) {
                     true -> {
-//                        upDateItem.invoke()
                         Log.d("VIN", "Field upDateItem")
                         upDateItem()
                     }
 
                     false -> {
-//                        saveItem.invoke()
                         Log.d("VIN", "Field saveItem")
                         saveItem()
                     }
                 }
-                navigateUp.invoke()
+                navigateUp()
             },
             modifier = Modifier
                 .fillMaxWidth()

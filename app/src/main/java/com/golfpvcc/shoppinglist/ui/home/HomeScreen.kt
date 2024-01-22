@@ -24,6 +24,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -87,14 +88,14 @@ fun HomeScreen(
                 }
             }
             items(homeState.items) {
-                val dismissState = rememberDismissState(
-                    confirmStateChange = { value ->
-                        if (value == DissmissValue.DissmissedToEnd) {
-                            homeViewModel.deleteItem(it.item)
-                        }
-                        true
+                val dismissState = rememberDismissState(confirmValueChange = { value ->
+                    if (value == DismissValue.DismissedToEnd) {
+                        homeViewModel.deleteItem(it.item)
                     }
+                    true
+                }
                 )
+
                 SwipeToDismiss(
                     state = dismissState,
                     background = {

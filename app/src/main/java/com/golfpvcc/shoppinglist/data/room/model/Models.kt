@@ -21,7 +21,7 @@ data class Item(
     val id: Int = 0,
     val itemName: String,
     val qty: String,
-    val listId: Int,
+    val listId: Int,    // change this key
     val storeIdFk: Int,
     val date: Date,
     val isChecked: Boolean
