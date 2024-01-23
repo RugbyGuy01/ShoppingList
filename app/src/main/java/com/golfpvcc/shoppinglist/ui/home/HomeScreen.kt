@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +29,7 @@ import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -75,7 +77,7 @@ fun HomeScreen(
         }
     ) {
         LazyColumn(modifier = Modifier.padding(it)) {
-            item {
+            item {// menu items
                 LazyRow {
                     items(Utils.category) { category: Category ->
                         CategoryItem(
@@ -87,91 +89,149 @@ fun HomeScreen(
                     }
                 }
             }
-            items(homeState.items) {
-                val dismissState = rememberDismissState(confirmValueChange = { value ->
-                    if (value == DismissValue.DismissedToEnd) {
-                        homeViewModel.deleteItem(it.item)
-                    }
-                    true
-                }
+            items(homeState.items.size) { index ->
+                ShoppingItemsNew(
+                    homeState = homeState,
+                    index = index,
+                    onCheckedChange = homeViewModel::onItemCheckedChange,
+                    onNavigate = onNavigate,
+                    onDeleteItem = homeViewModel::deleteItem
                 )
-
-                SwipeToDismiss(
-                    state = dismissState,
-                    background = {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(), color = Color.Red
-                        ) {
-
-                        }
-                    },
-                    dismissContent = {
-                        ShoppingItems(
-                            item = it,
-                            isChecked = it.item.isChecked,
-                            onCheckedChange = homeViewModel::onItemCheckedChange
-                        ) {
-                            onNavigate(it.item.id)
-                        }
-                    }
-                )
-            }
+            } // end of items
         }
     }
 }
 
 @Composable
-fun ShoppingItems(
-    item: ItemsWithStoreAndList,
-    isChecked: Boolean,
+fun ShoppingItemsNew(
+    homeState: HomeState,
+    index: Int,
     onCheckedChange: (Item, Boolean) -> Unit,
-    onItemClick: () -> Unit
+    onNavigate: (Int) -> Unit,
+    onDeleteItem: (Item) -> Unit
 ) {
+    val itemWithStoreAndList: ItemsWithStoreAndList = homeState.items[index]
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 Log.d("VIN:", "ShoppingItems onItemClick")
-                onItemClick()
+                onNavigate(itemWithStoreAndList.item.id)    // goto detail screen
             }
-            .padding(8.dp)
+            .padding(2.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        //    verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.padding(8.dp)) {
+            Column(modifier = Modifier.padding(5.dp)) {
                 Text(
-                    text = item.item.itemName,
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = itemWithStoreAndList.item.itemName,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = item.store.storeName)
+                Text(text = itemWithStoreAndList.store.storeName,
+                    style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = formatDate(item.item.date),
-                    style = MaterialTheme.typography.displaySmall
+                    style = MaterialTheme.typography.bodyLarge,
+                    text = formatDate(itemWithStoreAndList.item.date)
                 )
+
             }
-            Column(modifier = Modifier.padding(8.dp)) {
+            Column(modifier = Modifier.padding(5.dp),
+                verticalArrangement = Arrangement.Top) {
                 Text(
-                    text = "Qty: ${item.item.qty}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = "Qty: ${itemWithStoreAndList.item.qty}",
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
+                IconButton(
+                    onClick = {
+                        onDeleteItem(itemWithStoreAndList.item)
+                    }
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Note",
+                        modifier = Modifier.size(35.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+
+                }
+            }
+            Column(modifier = Modifier.padding(3.dp)) {
                 Spacer(modifier = Modifier.size(4.dp))
                 Checkbox(
-                    checked = isChecked,
+                    checked = itemWithStoreAndList.item.isChecked,
                     onCheckedChange = {
-                        onCheckedChange.invoke(item.item, it)
+                        onCheckedChange(itemWithStoreAndList.item, it)
                     }
                 )
+
             }
         }
     }
 }
+
+
+//@Composable
+//fun ShoppingItems(
+//    item: ItemsWithStoreAndList,
+//    isChecked: Boolean,
+//    onCheckedChange: (Item, Boolean) -> Unit,
+//    onItemClick: () -> Unit
+//) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable {
+//                Log.d("VIN:", "ShoppingItems onItemClick")
+//                onItemClick()
+//            }
+//            .padding(8.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Column(modifier = Modifier.padding(8.dp)) {
+//                Text(
+//                    text = item.item.itemName,
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    fontWeight = FontWeight.Bold
+//                )
+//                Spacer(modifier = Modifier.size(4.dp))
+//                Text(
+//                    style = MaterialTheme.typography.bodySmall,
+//                    text = formatDate(item.item.date)
+//                )
+//                Spacer(modifier = Modifier.size(4.dp))
+//                Text(text = item.store.storeName,
+//                    style = MaterialTheme.typography.bodyMedium
+//                    )
+//            }
+//            Column(modifier = Modifier.padding(8.dp)) {
+//                Text(
+//                    text = "Qty: ${item.item.qty}",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    fontWeight = FontWeight.Bold
+//                )
+//                Spacer(modifier = Modifier.size(4.dp))
+//                Checkbox(
+//                    checked = isChecked,
+//                    onCheckedChange = {
+//                        onCheckedChange.invoke(item.item, it)
+//                    }
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun CategoryItem(

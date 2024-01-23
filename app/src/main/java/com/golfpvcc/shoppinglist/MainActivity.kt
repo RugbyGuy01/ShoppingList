@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.golfpvcc.shoppinglist.ui.ShoppingNavigation
 import com.golfpvcc.shoppinglist.ui.home.HomeScreen
+import com.golfpvcc.shoppinglist.ui.home.TutorialSwipeToDismissScreen
 import com.golfpvcc.shoppinglist.ui.theme.ShoppingListTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ShoppingListAppl(){
+//        TutorialSwipeToDismissScreen()
         ShoppingNavigation()
     }
 }

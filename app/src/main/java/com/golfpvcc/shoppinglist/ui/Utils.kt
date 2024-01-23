@@ -24,5 +24,5 @@ object Utils {
 data class Category(
     @DrawableRes val resId: Int = -1,
     val title: String = "",
-    val id: Int = -1,
+    val id: Int = 10001,
 )

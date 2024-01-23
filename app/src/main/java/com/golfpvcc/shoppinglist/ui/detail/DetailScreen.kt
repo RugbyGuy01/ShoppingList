@@ -54,15 +54,16 @@ fun DetailScreen(
         Spacer(modifier = Modifier.padding(it))
         DetailEntry(
             state = viewModel.state,
-            onDateSelected = viewModel::onDateChange ,
+            onDateSelected = viewModel::onDateChange,
             onStoreChange = viewModel::onStoreChange,
             onItemChange = viewModel::onItemChange,
             onQtyChange = viewModel::onQtyChange,
             onCategoryChange = viewModel::onCategoryChange,
             onDialogDismissed = viewModel::onScreenDialogDismissed,
-            onSaveStore =  viewModel:: addStore,
+            onSaveStore = viewModel::addStore,
             upDateItem = { (viewModel::updateShoppingListItem)(id) },
-            saveItem =  viewModel:: addShoppingItem) {
+            saveItem = viewModel::addShoppingItem
+        ) {
             navigateUp()
         }
     }
@@ -182,6 +183,7 @@ fun DetailEntry(
             )
         }
         Spacer(modifier = Modifier.Companion.size(12.dp))
+        onCategoryChange(state.category)
         LazyRow(Modifier.height(75.dp)) {
             items(Utils.category) { category ->
                 CategoryItem(
