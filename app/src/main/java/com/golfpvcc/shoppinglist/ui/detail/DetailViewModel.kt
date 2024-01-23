@@ -106,7 +106,7 @@ constructor(
             repository.insertItem(
                 Item(
                     itemName = state.item,
-                    listId = state.category.id,
+                    shoppingListIdFk = state.category.id,
                     date = state.date,
                     qty = state.qty,
                     storeIdFk = state.storeList.find {
@@ -124,7 +124,7 @@ constructor(
             repository.insertItem(
                 Item(
                     itemName = state.item,
-                    listId = state.category.id,
+                    shoppingListIdFk = state.category.id,
                     date = state.date,
                     qty = state.qty,
                     storeIdFk = state.storeList.find {
