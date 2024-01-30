@@ -1,4 +1,4 @@
-package com.golfpvcc.shoppinglist.data.room
+package com.golfpvcc.shoppinglist.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -32,10 +32,10 @@ constructor(
 
     var state by mutableStateOf(DetailState())
         private set
-    val isFieldsNotEmpty: Boolean
-        get() = state.item.isNotEmpty() &&
-                state.store.isNotEmpty() &&
-                state.qty.isNotEmpty()
+//    val isFieldsNotEmpty: Boolean
+//        get() = state.item.isNotEmpty() &&
+//                state.store.isNotEmpty() &&
+//                state.qty.isNotEmpty()
     init {
         addListItem()
         getStores()

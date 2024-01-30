@@ -1,8 +1,8 @@
 package com.golfpvcc.shoppinglist.ui.repository
 
-import com.golfpvcc.shoppinglist.data.room.ItemDao
-import com.golfpvcc.shoppinglist.data.room.ListDao
-import com.golfpvcc.shoppinglist.data.room.StoreDao
+import com.golfpvcc.shoppinglist.data.room.dao.ItemDao
+import com.golfpvcc.shoppinglist.data.room.dao.ListDao
+import com.golfpvcc.shoppinglist.data.room.dao.StoreDao
 import com.golfpvcc.shoppinglist.data.room.model.Item
 import com.golfpvcc.shoppinglist.data.room.model.ShoppingList
 import com.golfpvcc.shoppinglist.data.room.model.Store

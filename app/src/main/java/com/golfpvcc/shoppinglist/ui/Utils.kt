@@ -1,14 +1,7 @@
 package com.golfpvcc.shoppinglist.ui
 
 import androidx.annotation.DrawableRes
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
 import com.golfpvcc.shoppinglist.R
-import java.text.SimpleDateFormat
-import java.util.Calendar
 
 object Utils {
     val category = listOf(
@@ -19,10 +12,18 @@ object Utils {
         Category(title = "Electronic", resId = R.drawable.ic_electronic, id = 4),
         Category(title = "None", resId =R.drawable.ic_baseline_not_interested_24 ,id = 10001)
     )
+    val holePar = listOf(
+        HolePar(3),
+        HolePar(4),
+        HolePar(5)
+    )
 }
-
 data class Category(
     @DrawableRes val resId: Int = -1,
     val title: String = "",
     val id: Int = 10001,
+)
+
+data class HolePar(
+    val Par:Int=4
 )

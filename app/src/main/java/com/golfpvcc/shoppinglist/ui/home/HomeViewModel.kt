@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.golfpvcc.shoppinglist.Graph
-import com.golfpvcc.shoppinglist.data.room.ItemsWithStoreAndList
+import com.golfpvcc.shoppinglist.data.room.dao.ItemsWithStoreAndList
 import com.golfpvcc.shoppinglist.data.room.model.Item
 import com.golfpvcc.shoppinglist.ui.Category
 import com.golfpvcc.shoppinglist.ui.repository.Repository

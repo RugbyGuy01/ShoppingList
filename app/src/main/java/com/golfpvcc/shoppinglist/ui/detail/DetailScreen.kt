@@ -101,7 +101,6 @@ fun DetailEntry(
         )
         Spacer(modifier = Modifier.Companion.size(12.dp))
         Row {
-
             TextField(
                 value = state.store,
                 onValueChange = {
@@ -225,20 +224,4 @@ fun DetailEntry(
     }
 }
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun PrevDetailEntry() {
-//    DetailEntry(
-//        state = DetailState(),
-//        onDateSelected = { },
-//        onStoreChange = { },
-//        onItemChange = {},
-//        onQtyChange = {},
-//        onCategoryChange = {},
-//        onDialogDismissed = {},
-//        onSaveStore = {},
-//        upDateItem = {},
-//        saveItem = {},
-//        navigateUp = {}
-//    )
-//}
+
