@@ -12,7 +12,8 @@ import com.golfpvcc.shoppinglist.ui.coursedetail.CourseDetailScreen
 import com.golfpvcc.shoppinglist.ui.courses.CoursesScreen
 import com.golfpvcc.shoppinglist.ui.detail.DetailScreen
 import com.golfpvcc.shoppinglist.ui.home.HomeScreen
-import com.golfpvcc.shoppinglist.ui.scorecard.ScoreCardScreen
+
+
 
 enum class Routes {
     Home,
@@ -52,7 +53,7 @@ fun ShoppingNavigation(
         composable(route = Routes.Courses.name) {
             Log.d("VIN", "ShoppingNavigation to CoursesScreen screen")
             CoursesScreen(onNavigate = { id ->
-                navHostController.navigate(route = "${Routes.ScoreCard.name}?id=$id")
+                navHostController.navigate(route = "${Routes.CourseDetail.name}?id=$id")
             })
         }
         /* --------------------Course Detail Screen----------------------------------------*/
@@ -69,16 +70,16 @@ fun ShoppingNavigation(
         }
         /* --------------------Score Card Screen----------------------------------------*/
 
-        composable(
-            route = "${Routes.ScoreCard.name}?id={id}",
-            arguments = listOf(navArgument("id") { type = NavType.IntType })
-        ) {
-            val id = it.arguments?.getInt("id") ?: -1
-            Log.d("VIN", "ShoppingNavigation to ScoreCard screen")
-            ScoreCardScreen(id = id) {
-                navHostController.navigateUp()
-            }
-        }
+//        composable(
+//            route = "${Routes.ScoreCard.name}?id={id}",
+//            arguments = listOf(navArgument("id") { type = NavType.IntType })
+//        ) {
+//            val id = it.arguments?.getInt("id") ?: -1
+//            Log.d("VIN", "ShoppingNavigation to ScoreCard screen")
+//            ScoreCardScreen(id = id) {
+//                navHostController.navigateUp()
+//            }
+//        }
 
     }
 }

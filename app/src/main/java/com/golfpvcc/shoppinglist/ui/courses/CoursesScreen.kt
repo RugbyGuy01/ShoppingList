@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -88,6 +89,7 @@ fun CourseItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(70.dp)
             .clickable {
                 Log.d("VIN:", "CourseItem onItemClick navigate to course details")
                 onNavigate(courseRecord.mId)    // goto detail screen
@@ -102,8 +104,8 @@ fun CourseItem(
 
             Text(
                 text = courseRecord.mCoursename,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Normal
             )
             Spacer(modifier = Modifier.size(14.dp))
             IconButton(

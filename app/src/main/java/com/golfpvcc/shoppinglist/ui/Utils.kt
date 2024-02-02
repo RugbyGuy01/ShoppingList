@@ -12,10 +12,10 @@ object Utils {
         Category(title = "Electronic", resId = R.drawable.ic_electronic, id = 4),
         Category(title = "None", resId =R.drawable.ic_baseline_not_interested_24 ,id = 10001)
     )
-    val holePar = listOf(
-        HolePar(3),
-        HolePar(4),
-        HolePar(5)
+    val holeParList = listOf(
+        HoleParList(3),
+        HoleParList(4),
+        HoleParList(5)
     )
 }
 data class Category(
@@ -24,6 +24,6 @@ data class Category(
     val id: Int = 10001,
 )
 
-data class HolePar(
+data class HoleParList(
     val Par:Int=4
 )
