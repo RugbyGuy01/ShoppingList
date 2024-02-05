@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -110,6 +111,18 @@ fun CourseItem(
             Spacer(modifier = Modifier.size(14.dp))
             IconButton(
                 onClick = {
+                    onNavigate(courseRecord.mId)    // goto detail screen
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = "Edit Course",
+                    modifier = Modifier.size(35.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            IconButton(
+                onClick = {
                     onDeleteCourse(courseRecord)
                 }
             ) {
@@ -120,6 +133,8 @@ fun CourseItem(
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
+            Spacer(modifier = Modifier.size(14.dp))
+
         }
     }
 }

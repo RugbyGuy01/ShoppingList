@@ -10,14 +10,16 @@ object Utils {
         Category(title = "Fruits", resId = R.drawable.ic_fruits, id = 2),
         Category(title = "Cleaning", resId = R.drawable.ic_cleaning, id = 3),
         Category(title = "Electronic", resId = R.drawable.ic_electronic, id = 4),
-        Category(title = "None", resId =R.drawable.ic_baseline_not_interested_24 ,id = 10001)
+        Category(title = "None", resId = R.drawable.ic_baseline_not_interested_24, id = 10001)
     )
     val holeParList = listOf(
         HoleParList(3),
         HoleParList(4),
         HoleParList(5)
     )
+
 }
+
 data class Category(
     @DrawableRes val resId: Int = -1,
     val title: String = "",
@@ -25,5 +27,6 @@ data class Category(
 )
 
 data class HoleParList(
-    val Par:Int=4
+    val Par: Int = 4
 )
+

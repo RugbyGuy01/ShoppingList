@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.golfpvcc.shoppinglist.Graph
 import com.golfpvcc.shoppinglist.data.room.model.CourseRecord
 import com.golfpvcc.shoppinglist.ui.HoleParList
+import com.golfpvcc.shoppinglist.ui.coursedetail.currentHandicapConfiguration
 import com.golfpvcc.shoppinglist.ui.repository.CourseRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -41,8 +42,11 @@ constructor(
                             mHandicap = it.mHandicap,
                             mId = it.mId
                         )
+                        setHandicapAvailable()  // wait for the record to be read from the database
                     }
             }
+        } else {
+            setHandicapAvailable()  // set up blank course
         }
     }
 
@@ -58,28 +62,21 @@ constructor(
         state = state.copy(mCoursename = newValue)
     }
 
-    fun onDisplayFront9Change(newValue: Boolean) {
-        state = state.copy(mDisplayFrontNine = !newValue)
+    fun getFlipHdcps(): Boolean {
+        return state.mFlipHdcps
     }
 
-    fun onDropDownDismissed(newValue: Boolean) {
-        state = state.copy(isDropDownDismissed = newValue)
+    fun onFlipHdcpsChange(newValue: Boolean) {
+        state = state.copy(mFlipHdcps = !newValue)
     }
 
-    fun onSelectHole(holeIdx: Int, newValue: Int) {
-        state.mHoleNumber[holeIdx] = newValue
+    // Configure course Par
+    fun onPopupSelectHolePar(holeIdx: Int) {
+        state = state.copy(isPopupSelectHolePar = holeIdx)
     }
 
-    fun onPopupSelectHolePar(newValue: Int) {
-        state = state.copy(isPopupSelectHolePar = newValue)
-    }
-    fun getPopupSelectHolePar():Int {
+    fun getPopupSelectHolePar(): Int {
         return (state.isPopupSelectHolePar)
-    }
-
-    fun onParChange(holeIdx: Int, newValue: Int) {
-        Log.d("VIN", "onParChange Inx$holeIdx - Par $newValue")
-        state.mPar[holeIdx] = newValue
     }
 
     fun getHolePar(holeIdx: Int): Int {
@@ -88,11 +85,33 @@ constructor(
         return newValue
     }
 
-    fun onHandicapChange(holeIdx: Int, newValue: Int) {
-        Log.d("VIN", "onHandicapChange Inx$holeIdx - Par $newValue")
-        state.mHandicap[holeIdx] = newValue
+    fun onParChange(holeIdx: Int, newValue: Int) {
+        Log.d("VIN", "onParChange Inx$holeIdx - Par $newValue")
+        state.mPar[holeIdx] = newValue
+    }
+// End Configure course Par
+
+    // Configure course Handicap
+    fun onPopupSelectHoleHdcp(holeIdx: Int) {
+        state = state.copy(isPopupSelectHoleHdcp = holeIdx)
     }
 
+    fun getPopupSelectHoleHandicap(): Int {
+        return (state.isPopupSelectHoleHdcp)
+    }
+
+    fun getHoleHandicap(holeIdx: Int): Int {
+        val newValue = state.mHandicap[holeIdx]
+        Log.d("VIN", "getHoleHandicap Inx$holeIdx - Hdcp $newValue")
+        return newValue
+    }
+
+    fun onHandicapChange(holeIdx: Int, newHdcp: Int) {
+        Log.d("VIN", "onHandicapChange Card Hole-$holeIdx - Hdcp $newHdcp")
+        state.mHandicap[holeIdx] = newHdcp
+    }
+
+    // End Configure course Handicap
     fun onUsStateChange(newValue: String) {
         state = state.copy(mUsstate = newValue)
     }
@@ -111,8 +130,8 @@ constructor(
         }
     }
 
-    fun HoleDetailInfo(mHeader: String, mHole: IntArray, mEnd: String): HoleDetailInfo {
-        return HoleDetailInfo(mHeader, mHole, mEnd)
+    fun setHandicapAvailable() {
+        currentHandicapConfiguration(state.mHandicap, state.availableHandicap)
     }
 }
 
@@ -120,17 +139,28 @@ data class CourseDetailState(
     val mId: Int = 0,
     val mCoursename: String = "",   // this is the database key for this course in the CourseListRecord class
     val mUsstate: String? = "",
-    val mDisplayFrontNine: Boolean = true,
+    val mFlipHdcps: Boolean = true,
     val mHoleNumber: IntArray = IntArray(18) { i -> i + 1 },
     val mPar: IntArray = IntArray(18) { 4 },
     val mHandicap: IntArray = IntArray(18) { 0 },
     val isUpdatingCourse: Boolean = false,
     val isPopupSelectHolePar: Int = -1,
+    val isPopupSelectHoleHdcp: Int = -1,
     val isDropDownDismissed: Boolean = false,
     val parList: HoleParList = HoleParList(),
-    var holeDetailInfo: HoleDetailInfo = HoleDetailInfo("header", mPar, "Total")
+    var availableHandicap: Array<HoleHandicap> = Array(18) { HoleHandicap(0, false) }
 )
 
+fun <HoleHandicap> Array(size: Int) {
+    val holeHandicap: Int = 0
+    var available: Boolean = false      // has the hole handicap been used?
+}
+
+
+data class HoleHandicap(
+    var holeHandicap: Int = 0,
+    var available: Boolean = false,      // has the hole handicap been used?
+)
 
 data class HoleDetailInfo(
     val mHeader: String = "Header",

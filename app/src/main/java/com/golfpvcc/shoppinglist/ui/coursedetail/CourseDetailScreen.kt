@@ -14,17 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -33,27 +31,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.golfpvcc.shoppinglist.ui.HoleParList
 import com.golfpvcc.shoppinglist.ui.Utils
 
-import com.golfpvcc.shoppinglist.ui.detail.CourseDetailState
 import com.golfpvcc.shoppinglist.ui.detail.CourseDetailViewModel
 import com.golfpvcc.shoppinglist.ui.theme.shape
 
@@ -69,16 +66,10 @@ fun CourseDetailScreen(
 
     Scaffold {
         Spacer(modifier = Modifier.padding(it))
+
         CourseDetailEntry(
-            courseDetailState = viewModel.state,
-            onCourseNameChange = viewModel::onCourseNameChange,
-            onDisplayFront9Change = viewModel::onDisplayFront9Change,
-            onParChange = viewModel::onParChange,
-            onHandicapChange = viewModel::onHandicapChange,
-            saveCourseRecord = viewModel::saveCourseRecord,
-            onPopupSelectHolePar = viewModel::onPopupSelectHolePar,
-            getPopupSelectHolePar = viewModel::getPopupSelectHolePar,
-            getHolePar = viewModel::getHolePar,
+            Modifier,
+            viewModel
         ) {
             navigateUp()
         }
@@ -89,56 +80,47 @@ fun CourseDetailScreen(
 @Composable
 fun CourseDetailEntry(
     modifier: Modifier = Modifier,
-    courseDetailState: CourseDetailState,
-    onCourseNameChange: (String) -> Unit,
-    onDisplayFront9Change: (Boolean) -> Unit,
-    onParChange: (Int, Int) -> Unit,
-    onHandicapChange: (Int, Int) -> Unit,
-    saveCourseRecord: () -> Unit,
-    onPopupSelectHolePar: (Int) -> Unit,
-    getPopupSelectHolePar: () -> Int,
-    getHolePar: (Int) -> Int,
+    viewModel: CourseDetailViewModel,
     navigateUp: () -> Unit
 ) {
-
+    //viewModel.setHandicapAvailable()
     Column(
         modifier = modifier
             .padding(5.dp)
             .fillMaxHeight()
     ) {
         Row {
-            GetCourseName(courseDetailState, onCourseNameChange)
-            DisplayFrontBacklButtons(courseDetailState, onDisplayFront9Change)
+            GetCourseName(viewModel)
+            DisplayFlipHdcpsButtons(viewModel)
         }
         Spacer(modifier = Modifier.size(12.dp))
         Divider(color = Color.Blue, thickness = 1.dp)
+        Spacer(modifier = Modifier.size(12.dp))
         ShowHoleDetailsList(
             modifier = Modifier.weight(1f),
-            courseDetailState,
-            onParChange,
-            onHandicapChange,
-            onPopupSelectHolePar,
-            getPopupSelectHolePar,
-            getHolePar,
+            viewModel,
         )
+        Spacer(modifier = Modifier.size(12.dp))
         Divider(color = Color.Blue, thickness = 1.dp)
         Spacer(modifier = Modifier.size(12.dp))
-        DisplaySaveCancelButtons(saveCourseRecord, navigateUp, courseDetailState.isUpdatingCourse)
+        DisplaySaveCancelButtons(viewModel, navigateUp)
     }
 }
 
 @Composable
-fun GetCourseName(courseDetailState: CourseDetailState, onCourseNameChange: (String) -> Unit) {
+fun GetCourseName(viewModel: CourseDetailViewModel) {
+    val focusManager = LocalFocusManager.current
+
     val mMaxLength = 15
     val mContext = LocalContext.current
 
     OutlinedTextField(
         modifier = Modifier.width(200.dp),
-        value = courseDetailState.mCoursename,
-        textStyle = MaterialTheme.typography.headlineMedium,
+        value = viewModel.state.mCoursename,
+        textStyle = MaterialTheme.typography.bodyLarge,
         singleLine = true,
         onValueChange = {
-            if (it.length <= mMaxLength) onCourseNameChange(it)
+            if (it.length <= mMaxLength) viewModel.onCourseNameChange(it)
             else Toast.makeText(
                 mContext,
                 "Cannot be more than $mMaxLength Characters",
@@ -146,84 +128,65 @@ fun GetCourseName(courseDetailState: CourseDetailState, onCourseNameChange: (Str
             ).show()
         },
         label = { Text(text = "Course Name") },
+        placeholder = { Text(text = "Enter Course Name") },
         shape = shape.large,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = Red,
-            unfocusedBorderColor = White,
+            unfocusedBorderColor = Blue,
             focusedLabelColor = Red,
-            unfocusedLabelColor = White,
+            unfocusedLabelColor = Blue,
+        ),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
         )
-    )
+
+        )
 }
 
 @Composable
-fun DisplayFrontBacklButtons(
-    courseDetailState: CourseDetailState,
-    onDisplayFront9Change: (Boolean) -> Unit,
-) {
+fun DisplayFlipHdcpsButtons(viewModel: CourseDetailViewModel) {
     Button(
         modifier = Modifier
-            .padding(top = 20.dp)
+            .padding(top = 20.dp,start = 20.dp)
             .height(40.dp),
         onClick = {
-            onDisplayFront9Change(courseDetailState.mDisplayFrontNine)
+            viewModel.onFlipHdcpsChange(viewModel.state.mFlipHdcps)
         },
         shape = shape.large
     ) {
-        if (courseDetailState.mDisplayFrontNine) Text(text = "Front 9") else Text(text = "Back 9")
+        if (viewModel.state.mFlipHdcps) Text(text = "Normal") else Text(text = "Hdcp Flip")
     }
 }
 
 @Composable
 fun ShowHoleDetailsList(
-    modifier: Modifier,
-    courseDetailState: CourseDetailState,
-    onParChange: (Int, Int) -> Unit,
-    onHandicapChange: (Int, Int) -> Unit,
-    onPopupSelectHolePar: (Int) -> Unit,
-    getPopupSelectHolePar: () -> Int,
-    getHolePar: (Int) -> Int,
+    modifier: Modifier, viewModel: CourseDetailViewModel,
 ) {
-    val parHoleInx = getPopupSelectHolePar()
+    val parHoleInx = viewModel.getPopupSelectHolePar()
+    val hdcpHoleInx = viewModel.getPopupSelectHoleHandicap()
 
     LazyColumn(modifier) {
-        items(courseDetailState.mPar.size) { holeIdx ->
-            HoleDetail(
-                holeIdx,
-                courseDetailState.mPar[holeIdx],
-                courseDetailState.mHandicap[holeIdx],
-                onParChange,
-                onPopupSelectHolePar,
-                onHandicapChange,
-                courseDetailState,
-            )
+        items(viewModel.state.mPar.size) { holeIdx ->
+            HoleDetail(viewModel, holeIdx)
             Spacer(modifier = Modifier.size(10.dp))
         } // end of CourseItem
     }
-    if (parHoleInx != -1) {
-        val newParValue = DropDownMenuSelectHolePar(
-            parHoleInx,
-            onPopupSelectHolePar,
-            onParChange,
-            getPopupSelectHolePar,
-            getHolePar,
-        )
+    if (parHoleInx != -1) {     // the function is called many time, if click par/hdcp button then popup select hole will be set
+        DropDownSelectHolePar(viewModel, parHoleInx)
+    }
+    if (hdcpHoleInx != -1) {
+        DropDownSelectHoleHandicap(viewModel, hdcpHoleInx)
     }
 }
 
-
 @Composable
-fun HoleDetail(
-    holeIdx: Int,
-    par: Int,
-    handicap: Int,
-    onParChange: (Int, Int) -> Unit,
-    onPopupSelectHolePar: (Int) -> Unit,
-    onHandicapChange: (Int, Int) -> Unit,
-    courseDetailState: CourseDetailState,
-) {
-    var newParValue: Int
-
+fun HoleDetail(viewModel: CourseDetailViewModel, holeIdx: Int) {
 
     Card(
         border = BorderStroke(1.dp, Color.Black),
@@ -235,15 +198,15 @@ fun HoleDetail(
 
         Row(
             modifier = Modifier
-                .width(200.dp)
-                .padding(15.dp),
+                .width(210.dp)
+                .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextButton(
-                onClick = { onPopupSelectHolePar(holeIdx) },
+                onClick = { viewModel.onPopupSelectHolePar(holeIdx) },
             ) {
                 Text(
-                    text = "Par $par",
+                    text = "Par ${viewModel.state.mPar[holeIdx]}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -252,31 +215,120 @@ fun HoleDetail(
                 text = "Hole ${holeIdx + 1}",
                 style = MaterialTheme.typography.bodyLarge,
             )
-            Text(
-                text = "Hdcp $handicap",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            TextButton(
+                onClick = { viewModel.onPopupSelectHoleHdcp(holeIdx) },
+            ) {
+                val displayText =
+                    if (viewModel.state.mHandicap[holeIdx] == 0) " --  " else viewModel.state.mHandicap[holeIdx]
+                Text(
+                    text = "Hdcp $displayText",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
 
-@Composable
-fun DropDownMenuSelectHolePar(
-    holeIdx: Int,
-    onPopupSelectHolePar: (Int) -> Unit,
-    onParChange: (Int, Int) -> Unit,
-    getPopupSelectHolePar: () -> Int,
-    getHolePar: (Int) -> Int,
-) {
-    var expanded = if (getPopupSelectHolePar() < 0) false else true
-    val currentHolePar = getHolePar(holeIdx)
+@Composable     // holeIdx is zero base index
+fun DropDownSelectHoleHandicap(viewModel: CourseDetailViewModel, holeIdx: Int) {
+    var expanded = if (viewModel.getPopupSelectHoleHandicap() < 0) false else true
+    val currentHoleHdcp = viewModel.getHoleHandicap(holeIdx)
+    val courseHdcp = viewModel.state.availableHandicap
+    val displayFrontNineHdcp : Int
+    val FlipHdcps = viewModel.getFlipHdcps()
+
+    if(FlipHdcps){
+        displayFrontNineHdcp = if (holeIdx < 9) 0 else 1 // used to display the handicap holes to select
+    }else {
+        displayFrontNineHdcp = if (holeIdx < 9) 1 else 0 // used to display the handicap holes to select
+    }
+
     Popup(
         alignment = Alignment.CenterEnd,
         onDismissRequest = {
-            onPopupSelectHolePar(-1)
+            viewModel.onPopupSelectHoleHdcp(-1)
             expanded
         }
-    ) {
+    ) {     // Composable content to be shown in the Popup
+        Surface(
+            modifier = Modifier.padding(1.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, Red)
+        ) //Well, its a border)
+        {
+            Column(
+                modifier = Modifier
+                    .padding(3.dp)
+                    .width(110.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.padding(15.dp),
+                    text = "Hole ${holeIdx + 1}"
+                )
+                Divider(color = Color.Blue, thickness = 1.dp)
+
+                courseHdcp.forEachIndexed { inx, holeHdcp ->
+                    if ((inx % 2) == displayFrontNineHdcp) {
+                        if (courseHdcp[inx].available || currentHoleHdcp == courseHdcp[inx].holeHandicap) {
+                            Divider(color = Color.Green, thickness = 1.dp)
+                            Text(
+                                text = "      ${courseHdcp[inx].holeHandicap}     ",
+                                textAlign = TextAlign.Center,
+                                color = if (currentHoleHdcp == courseHdcp[inx].holeHandicap) White else Color.Unspecified,
+                                style = if (currentHoleHdcp == courseHdcp[inx].holeHandicap) TextStyle(
+                                    background = Black
+                                ) else TextStyle(
+                                    background = Color.Yellow
+                                ),
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .clickable {
+                                        if (currentHoleHdcp != courseHdcp[inx].holeHandicap) {
+                                            val returnHdcpToPool =
+                                                courseHdcp.find { it.holeHandicap == currentHoleHdcp }
+                                            if (returnHdcpToPool != null) {
+                                                returnHdcpToPool.available = true
+                                                Log.d(
+                                                    "VIN",
+                                                    "returnHdcpToPool ${returnHdcpToPool.holeHandicap}"
+                                                )
+                                            }
+                                        }
+
+                                        viewModel.onHandicapChange(
+                                            holeIdx,
+                                            courseHdcp[inx].holeHandicap
+                                        )
+                                        courseHdcp[inx].available =
+                                            false        // this handicap has been selected
+                                        Log.d(
+                                            "VIN",
+                                            "clickable Card Hole $holeIdx set to Hdcp ${courseHdcp[inx].holeHandicap} "
+                                        )
+                                        viewModel.onPopupSelectHoleHdcp(-1)
+                                    }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable  // holeIdx is zero base index
+fun DropDownSelectHolePar(viewModel: CourseDetailViewModel, holeIdx: Int) {
+    var expanded = if (viewModel.getPopupSelectHolePar() < 0) false else true
+    val currentHolePar = viewModel.getHolePar(holeIdx)
+    Popup(
+        alignment = Alignment.CenterEnd,
+        onDismissRequest = {
+            viewModel.onPopupSelectHolePar(-1)
+            expanded
+        }
+    ) {     // Composable content to be shown in the Popup
         Surface(
             modifier = Modifier.padding(1.dp),
             shape = RoundedCornerShape(12.dp),
@@ -307,8 +359,8 @@ fun DropDownMenuSelectHolePar(
                         modifier = Modifier
                             .padding(8.dp)
                             .clickable {
-                                onParChange(holeIdx, it.Par)
-                                onPopupSelectHolePar(-1)
+                                viewModel.onParChange(holeIdx, it.Par)
+                                viewModel.onPopupSelectHolePar(-1)
                             }
                     )
                 }
@@ -318,11 +370,7 @@ fun DropDownMenuSelectHolePar(
 }
 
 @Composable
-fun DisplaySaveCancelButtons(
-    saveCourseRecord: () -> Unit,
-    navigateUp: () -> Unit,
-    isUpdatingCourse: Boolean,
-) {
+fun DisplaySaveCancelButtons(viewModel: CourseDetailViewModel, navigateUp: () -> Unit) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -330,7 +378,7 @@ fun DisplaySaveCancelButtons(
     ) {
         Button(
             onClick = {
-                saveCourseRecord()
+                viewModel.saveCourseRecord()
                 navigateUp()
             },
             modifier = Modifier
@@ -338,7 +386,7 @@ fun DisplaySaveCancelButtons(
             shape = shape.large
         ) {
             Text(
-                text = if (isUpdatingCourse) {
+                text = if (viewModel.state.isUpdatingCourse) {
                     "Update"
                 } else {
                     "Save"
