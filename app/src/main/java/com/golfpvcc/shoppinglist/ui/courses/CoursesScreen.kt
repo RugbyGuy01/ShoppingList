@@ -29,19 +29,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.golfpvcc.shoppinglist.data.room.model.CourseRecord
+import com.golfpvcc.shoppinglist.ui.navigation.Screen
 
-
+// .popBackStack()  // move back to the last screen displayed
 @Composable
 fun CoursesScreen(
-    onNavigate: (Int) -> Unit
+    navController: NavHostController
 ) {
     val courseViewModel = viewModel(modelClass = CoursesViewModel::class.java)
     val coursesState = courseViewModel.state
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigate(-1) }) {
+            FloatingActionButton(onClick = {
+                navController.navigate(route = "CourseDetail?id={-1}")
+            }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add"
@@ -49,9 +54,11 @@ fun CoursesScreen(
             }
         }
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(it)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(it)
+        ) {
             Row(
                 modifier = Modifier
 //                    .padding(it)
@@ -70,7 +77,7 @@ fun CoursesScreen(
                     CourseItem(
                         coursesState = coursesState,
                         index = index,
-                        onNavigate = onNavigate,
+                        navController = navController,
                         onDeleteCourse = courseViewModel::deleteCourse
                     )
                 } // end of CourseItem
@@ -83,7 +90,7 @@ fun CoursesScreen(
 fun CourseItem(
     coursesState: CoursesState,
     index: Int,
-    onNavigate: (Int) -> Unit,
+    navController: NavHostController,
     onDeleteCourse: (CourseRecord) -> Unit
 ) {
     val courseRecord: CourseRecord = coursesState.courseRecords[index]
@@ -92,8 +99,8 @@ fun CourseItem(
             .fillMaxWidth()
             .height(70.dp)
             .clickable {
-                Log.d("VIN:", "CourseItem onItemClick navigate to course details")
-                onNavigate(courseRecord.mId)    // goto detail screen
+                Log.d("VIN:", "CourseItem onItemClick navigate to Player Setup")
+                navController.navigate(route = Screen.PlayerSetup.passId(courseRecord.mId))
             }
             .padding(2.dp)
     ) {
@@ -111,7 +118,8 @@ fun CourseItem(
             Spacer(modifier = Modifier.size(14.dp))
             IconButton(
                 onClick = {
-                    onNavigate(courseRecord.mId)    // goto detail screen
+                    Log.d("VIN", "CourseDetail?id={${courseRecord.mId}}")
+                    navController.navigate(route = Screen.DetailCourse.passId(courseRecord.mId))  // goto detail screen
                 }
             ) {
                 Icon(

@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.golfpvcc.shoppinglist.ui.Utils
 
 import com.golfpvcc.shoppinglist.ui.detail.CourseDetailViewModel
@@ -57,9 +58,11 @@ import com.golfpvcc.shoppinglist.ui.theme.shape
 
 @Composable
 fun CourseDetailScreen(
-    id: Int,
-    navigateUp: () -> Unit
+    navHostController: NavHostController,
+    id: Int?,
+//    navigateUp: () -> Unit
 ) {
+    Log.d("VIN", "CourseDetailScreen CourseDetail $id")
     val viewModel = viewModel<CourseDetailViewModel>(
         factory = CourseDetailViewModel.CourseDetailViewModelFactor(id)
     )
@@ -69,10 +72,9 @@ fun CourseDetailScreen(
 
         CourseDetailEntry(
             Modifier,
-            viewModel
-        ) {
-            navigateUp()
-        }
+            viewModel,
+            navHostController
+        )
     }
 }
 
@@ -81,7 +83,7 @@ fun CourseDetailScreen(
 fun CourseDetailEntry(
     modifier: Modifier = Modifier,
     viewModel: CourseDetailViewModel,
-    navigateUp: () -> Unit
+    navHostController: NavHostController,
 ) {
     //viewModel.setHandicapAvailable()
     Column(
@@ -103,7 +105,7 @@ fun CourseDetailEntry(
         Spacer(modifier = Modifier.size(12.dp))
         Divider(color = Color.Blue, thickness = 1.dp)
         Spacer(modifier = Modifier.size(12.dp))
-        DisplaySaveCancelButtons(viewModel, navigateUp)
+        DisplaySaveCancelButtons(viewModel, navHostController)
     }
 }
 
@@ -146,14 +148,14 @@ fun GetCourseName(viewModel: CourseDetailViewModel) {
             }
         )
 
-        )
+    )
 }
 
 @Composable
 fun DisplayFlipHdcpsButtons(viewModel: CourseDetailViewModel) {
     Button(
         modifier = Modifier
-            .padding(top = 20.dp,start = 20.dp)
+            .padding(top = 20.dp, start = 20.dp)
             .height(40.dp),
         onClick = {
             viewModel.onFlipHdcpsChange(viewModel.state.mFlipHdcps)
@@ -234,13 +236,15 @@ fun DropDownSelectHoleHandicap(viewModel: CourseDetailViewModel, holeIdx: Int) {
     var expanded = if (viewModel.getPopupSelectHoleHandicap() < 0) false else true
     val currentHoleHdcp = viewModel.getHoleHandicap(holeIdx)
     val courseHdcp = viewModel.state.availableHandicap
-    val displayFrontNineHdcp : Int
+    val displayFrontNineHdcp: Int
     val FlipHdcps = viewModel.getFlipHdcps()
 
-    if(FlipHdcps){
-        displayFrontNineHdcp = if (holeIdx < 9) 0 else 1 // used to display the handicap holes to select
-    }else {
-        displayFrontNineHdcp = if (holeIdx < 9) 1 else 0 // used to display the handicap holes to select
+    if (FlipHdcps) {
+        displayFrontNineHdcp =
+            if (holeIdx < 9) 0 else 1 // used to display the handicap holes to select
+    } else {
+        displayFrontNineHdcp =
+            if (holeIdx < 9) 1 else 0 // used to display the handicap holes to select
     }
 
     Popup(
@@ -370,7 +374,7 @@ fun DropDownSelectHolePar(viewModel: CourseDetailViewModel, holeIdx: Int) {
 }
 
 @Composable
-fun DisplaySaveCancelButtons(viewModel: CourseDetailViewModel, navigateUp: () -> Unit) {
+fun DisplaySaveCancelButtons(viewModel: CourseDetailViewModel, navHostController: NavHostController,) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -379,7 +383,7 @@ fun DisplaySaveCancelButtons(viewModel: CourseDetailViewModel, navigateUp: () ->
         Button(
             onClick = {
                 viewModel.saveCourseRecord()
-                navigateUp()
+                navHostController.navigate(route = "Configuration") // display courses screen
             },
             modifier = Modifier
                 .height(40.dp),  //vpg
@@ -395,7 +399,7 @@ fun DisplaySaveCancelButtons(viewModel: CourseDetailViewModel, navigateUp: () ->
         }
         Button(
             onClick = {
-                navigateUp()
+                navHostController.navigate(route = "Configuration") // display courses screen
             },
             modifier = Modifier
                 .height(40.dp),  //vpg

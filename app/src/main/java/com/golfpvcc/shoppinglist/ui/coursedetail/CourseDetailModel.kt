@@ -15,13 +15,12 @@ import com.golfpvcc.shoppinglist.ui.repository.CourseRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class CourseDetailViewModel
-constructor(
-    private val courseId: Int,
+class CourseDetailViewModel(
+    private val courseId: Int?,
     private val repository: CourseRepository = Graph.courseRepository,
 ) : ViewModel() {
     @Suppress("UNCHECKED_CAST")
-    class CourseDetailViewModelFactor(private val id: Int) : ViewModelProvider.Factory {
+    class CourseDetailViewModelFactor(private val id: Int?) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CourseDetailViewModel(courseId = id) as T
         }
@@ -151,19 +150,9 @@ data class CourseDetailState(
     var availableHandicap: Array<HoleHandicap> = Array(18) { HoleHandicap(0, false) }
 )
 
-fun <HoleHandicap> Array(size: Int) {
-    val holeHandicap: Int = 0
-    var available: Boolean = false      // has the hole handicap been used?
-}
-
 
 data class HoleHandicap(
     var holeHandicap: Int = 0,
     var available: Boolean = false,      // has the hole handicap been used?
 )
 
-data class HoleDetailInfo(
-    val mHeader: String = "Header",
-    val mHole: IntArray = IntArray(18) { 0 },
-    val mEnd: String = "Total",
-)

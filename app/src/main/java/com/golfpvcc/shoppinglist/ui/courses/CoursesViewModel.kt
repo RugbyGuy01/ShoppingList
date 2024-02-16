@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.golfpvcc.shoppinglist.Graph
 import com.golfpvcc.shoppinglist.data.room.model.CourseRecord
-import com.golfpvcc.shoppinglist.data.room.model.Item
-import com.golfpvcc.shoppinglist.ui.home.HomeState
 import com.golfpvcc.shoppinglist.ui.repository.CourseRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
